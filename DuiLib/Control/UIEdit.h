@@ -7,8 +7,9 @@ namespace DuiLib
 {
 	class CEditWnd;
 
-	class DUILIB_API CEditUI : public CLabelUI
+	class UILIB_API CEditUI : public CLabelUI
 	{
+		DECLARE_DUICONTROL(CEditUI)
 		friend class CEditWnd;
 	public:
 		CEditUI();
@@ -16,7 +17,6 @@ namespace DuiLib
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
 		UINT GetControlFlags() const;
-		HWND GetNativeWindow() const;
 
 		void SetEnabled(bool bEnable = true);
 		void SetText(LPCTSTR pstrText);
@@ -28,12 +28,9 @@ namespace DuiLib
 		bool IsPasswordMode() const;
 		void SetPasswordChar(TCHAR cPasswordChar);
 		TCHAR GetPasswordChar() const;
-		bool IsAutoSelAll();
-		void SetAutoSelAll(bool bAutoSelAll);
 		void SetNumberOnly(bool bNumberOnly);
 		bool IsNumberOnly() const;
 		int GetWindowStyls() const;
-		HWND GetNativeEditHWND() const;
 
 		LPCTSTR GetNormalImage();
 		void SetNormalImage(LPCTSTR pStrImage);
@@ -45,10 +42,19 @@ namespace DuiLib
 		void SetDisabledImage(LPCTSTR pStrImage);
 		void SetNativeEditBkColor(DWORD dwBkColor);
 		DWORD GetNativeEditBkColor() const;
+		void SetNativeEditTextColor( LPCTSTR pStrColor );
+		DWORD GetNativeEditTextColor() const;
 
+		bool IsAutoSelAll();
+		void SetAutoSelAll(bool bAutoSelAll);
 		void SetSel(long nStartChar, long nEndChar);
 		void SetSelAll();
 		void SetReplaceSel(LPCTSTR lpszReplace);
+
+		void SetTipValue(LPCTSTR pStrTipValue);
+		LPCTSTR GetTipValue();
+		void SetTipValueColor(LPCTSTR pStrColor);
+		DWORD GetTipValueColor();
 
 		void SetPos(RECT rc, bool bNeedInvalidate = true);
 		void Move(SIZE szOffset, bool bNeedInvalidate = true);
@@ -70,13 +76,15 @@ namespace DuiLib
 		bool m_bAutoSelAll;
 		TCHAR m_cPasswordChar;
 		UINT m_uButtonState;
+		CDuiString m_sNormalImage;
+		CDuiString m_sHotImage;
+		CDuiString m_sFocusedImage;
+		CDuiString m_sDisabledImage;
+		CDuiString m_sTipValue;
+		DWORD m_dwTipValueColor;
 		DWORD m_dwEditbkColor;
+		DWORD m_dwEditTextColor;
 		int m_iWindowStyls;
-
-		TDrawInfo m_diNormal;
-		TDrawInfo m_diHot;
-		TDrawInfo m_diFocused;
-		TDrawInfo m_diDisabled;
 	};
 }
 #endif // __UIEDIT_H__

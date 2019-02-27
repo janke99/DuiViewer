@@ -1,20 +1,21 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UITabLayout.h"
 
 namespace DuiLib
 {
+	IMPLEMENT_DUICONTROL(CTabLayoutUI)
 	CTabLayoutUI::CTabLayoutUI() : m_iCurSel(-1)
 	{
 	}
 
 	LPCTSTR CTabLayoutUI::GetClass() const
 	{
-		return DUI_CTR_TABLAYOUT;
+		return _T("TabLayoutUI");
 	}
 
 	LPVOID CTabLayoutUI::GetInterface(LPCTSTR pstrName)
 	{
-		if( _tcscmp(pstrName, DUI_CTR_TABLAYOUT) == 0 ) return static_cast<CTabLayoutUI*>(this);
+		if( _tcsicmp(pstrName, DUI_CTR_TABLAYOUT) == 0 ) return static_cast<CTabLayoutUI*>(this);
 		return CContainerUI::GetInterface(pstrName);
 	}
 
@@ -56,12 +57,12 @@ namespace DuiLib
 		return ret;
 	}
 
-	bool CTabLayoutUI::Remove(CControlUI* pControl, bool bDoNotDestroy)
+	bool CTabLayoutUI::Remove(CControlUI* pControl)
 	{
 		if( pControl == NULL) return false;
 
 		int index = GetItemIndex(pControl);
-		bool ret = CContainerUI::Remove(pControl, bDoNotDestroy);
+		bool ret = CContainerUI::Remove(pControl);
 		if( !ret ) return false;
 
 		if( m_iCurSel == index)
@@ -95,7 +96,7 @@ namespace DuiLib
 		return m_iCurSel;
 	}
 
-	bool CTabLayoutUI::SelectItem(int iIndex,  bool bTriggerEvent)
+	bool CTabLayoutUI::SelectItem(int iIndex)
 	{
 		if( iIndex < 0 || iIndex >= m_items.GetSize() ) return false;
 		if( iIndex == m_iCurSel ) return true;
@@ -107,6 +108,7 @@ namespace DuiLib
 			if( it == iIndex ) {
 				GetItemAt(it)->SetVisible(true);
 				GetItemAt(it)->SetFocus();
+				SetPos(m_rcItem);
 			}
 			else GetItemAt(it)->SetVisible(false);
 		}
@@ -114,23 +116,23 @@ namespace DuiLib
 
 		if( m_pManager != NULL ) {
 			m_pManager->SetNextTabControl();
-			if (bTriggerEvent) m_pManager->SendNotify(this, DUI_MSGTYPE_TABSELECT, m_iCurSel, iOldSel);
+			m_pManager->SendNotify(this, DUI_MSGTYPE_TABSELECT, m_iCurSel, iOldSel);
 		}
 		return true;
 	}
 
-	bool CTabLayoutUI::SelectItem(CControlUI* pControl, bool bTriggerEvent)
+	bool CTabLayoutUI::SelectItem( CControlUI* pControl )
 	{
 		int iIndex=GetItemIndex(pControl);
 		if (iIndex==-1)
 			return false;
 		else
-			return SelectItem(iIndex, bTriggerEvent);
+			return SelectItem(iIndex);
 	}
 
 	void CTabLayoutUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
-		if( _tcscmp(pstrName, _T("selectedid")) == 0 ) SelectItem(_ttoi(pstrValue));
+		if( _tcsicmp(pstrName, _T("selectedid")) == 0 ) SelectItem(_ttoi(pstrValue));
 		return CContainerUI::SetAttribute(pstrName, pstrValue);
 	}
 
@@ -177,7 +179,7 @@ namespace DuiLib
 			if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
 
 			RECT rcCtrl = { rc.left, rc.top, rc.left + sz.cx, rc.top + sz.cy};
-			pControl->SetPos(rcCtrl, false);
+			pControl->SetPos(rcCtrl);
 		}
 	}
 }

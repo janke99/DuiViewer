@@ -5,7 +5,7 @@
 
 namespace DuiLib {
 
-class DUILIB_API CDelegateBase	 
+class UILIB_API CDelegateBase	 
 {
 public:
     CDelegateBase(void* pObject, void* pFn);
@@ -46,24 +46,19 @@ class CDelegate : public CDelegateBase
 {
     typedef bool (T::* Fn)(void*);
 public:
-    CDelegate(O* pObj, Fn pFn) : CDelegateBase(pObj, *(void**)&pFn) { }
-    CDelegate(const CDelegate& rhs) : CDelegateBase(rhs) { } 
+    CDelegate(O* pObj, Fn pFn) : CDelegateBase(pObj, &pFn), m_pFn(pFn) { }
+    CDelegate(const CDelegate& rhs) : CDelegateBase(rhs) { m_pFn = rhs.m_pFn; } 
     virtual CDelegateBase* Copy() const { return new CDelegate(*this); }
 
 protected:
     virtual bool Invoke(void* param)
     {
-		O* pObject = (O*) GetObject();
-		union
-		{
-			void* ptr;
-			Fn fn;
-		} func = { GetFn() };
-		return (pObject->*func.fn)(param);
+        O* pObject = (O*) GetObject();
+        return (pObject->*m_pFn)(param); 
     }  
 
 private:
-	Fn m_pFn;
+    Fn m_pFn;
 };
 
 template <class O, class T>
@@ -77,7 +72,7 @@ inline CDelegateStatic MakeDelegate(bool (*pFn)(void*))
     return CDelegateStatic(pFn); 
 }
 
-class DUILIB_API CEventSource
+class UILIB_API CEventSource
 {
     typedef bool (*FnType)(void*);
 public:
@@ -88,9 +83,10 @@ public:
     void operator-= (const CDelegateBase& d);
     void operator-= (FnType pFn);
     bool operator() (void* param);
+	void Clear();
 
 protected:
-    CDuiPtrArray m_aDelegates;
+    CStdPtrArray m_aDelegates;
 };
 
 } // namespace DuiLib

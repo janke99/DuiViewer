@@ -1,16 +1,23 @@
 #include "stdafx.h"
+#include <shlwapi.h>
 #include "AppManager.h"
 #include "Common/Utils.h"
 #include "UI/WindowBase.h"
 
+#pragma comment(lib, "Shlwapi.lib")
 
 
 template<> CAppManager* CSingleton<CAppManager>::ms_Singleton = NULL;
 
+#pragma warning(disable:4996)
 CAppManager::CAppManager()
 	:m_WinBase(NULL)
 {
-
+	TCHAR szCurrentDir[MAX_PATH + 1] = { 0 };
+	GetCurrentDirectory(MAX_PATH, szCurrentDir);
+	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('\\'));
+	_tcscpy(lpInsertPos, _T("\\"));
+	m_AppPath = szCurrentDir;
 }
 
 CAppManager::~CAppManager()
@@ -20,8 +27,12 @@ CAppManager::~CAppManager()
 
 BOOL CAppManager::LoadSkin(LPCTSTR lpcSkin)
 {
-	TString strSkin = lpcSkin;
+	if (!lpcSkin || _tcslen(lpcSkin) == 0) return FALSE;
+	TCHAR szBuf[MAX_PATH] = {0};
+	::PathCombine(szBuf, m_AppPath.c_str(), lpcSkin);
+	TString strSkin = szBuf;
 	if (strSkin.empty()) return FALSE;
+	
 	size_t ps = strSkin.find_last_of(_T("\\"));
 	if (ps == TString::npos) return FALSE;
 

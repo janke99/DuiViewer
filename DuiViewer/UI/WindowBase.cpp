@@ -84,10 +84,10 @@ LRESULT CWindowBase::OnCreate(WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	lstrcpyn(szSkin, m_strXML, MAX_PATH);
 
 	//CDialogBuilder builder;
-	CDialogBuilderEx builder;
-	CDialogBuilderCallbackEx cb;
+	CDialogBuilder builder;
+	//CDialogBuilderCallbackEx cb;
 	
-	CControlUI* pRoot = builder.Create(szSkin, 0, &cb, &m_PaintManager);
+	CControlUI* pRoot = builder.Create(szSkin, 0, NULL, &m_PaintManager);
 
 	if (!pRoot)
 		return -1;
@@ -155,9 +155,10 @@ LRESULT CWindowBase::OnNcHitTest(WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 		if (pControl)
 		{
 			LPCTSTR pszClass = pControl->GetClass();
-			if (_tcsicmp(pszClass, _T("Button")) != 0 &&
-				_tcsicmp(pszClass, _T("Text")) != 0 &&
-				_tcsicmp(pszClass, _T("LinkUI")) != 0)
+			::OutputDebugString(pszClass);
+			::OutputDebugString(_T("\r"));
+			if (_tcsicmp(pszClass, _T("VerticalLayoutUI")) == 0 
+				|| _tcsicmp(pszClass, _T("HorizontalLayoutUI")) == 0)
 			{
 				return HTCAPTION;
 			}

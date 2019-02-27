@@ -19,4 +19,5 @@ private:
 	TString		m_strSkinPath;
 	TString		m_strSkinName;
 	CWindowBase	*m_WinBase;
+	TString		m_AppPath;
 };

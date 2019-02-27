@@ -5,8 +5,9 @@
 
 namespace DuiLib
 {
-	class DUILIB_API CVerticalLayoutUI : public CContainerUI
+	class UILIB_API CVerticalLayoutUI : public CContainerUI
 	{
+		DECLARE_DUICONTROL(CVerticalLayoutUI)
 	public:
 		CVerticalLayoutUI();
 
@@ -29,7 +30,7 @@ namespace DuiLib
 	protected:
 		int m_iSepHeight;
 		UINT m_uButtonState;
-		POINT m_ptLastMouse;
+		POINT ptLastMouse;
 		RECT m_rcNewPos;
 		bool m_bImmMode;
 	};

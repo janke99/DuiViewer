@@ -5,8 +5,9 @@
 
 namespace DuiLib
 {
-	class DUILIB_API CHorizontalLayoutUI : public CContainerUI
+	class UILIB_API CHorizontalLayoutUI : public CContainerUI
 	{
+		DECLARE_DUICONTROL(CHorizontalLayoutUI)
 	public:
 		CHorizontalLayoutUI();
 
@@ -29,7 +30,7 @@ namespace DuiLib
 	protected:
 		int m_iSepWidth;
 		UINT m_uButtonState;
-		POINT m_ptLastMouse;
+		POINT ptLastMouse;
 		RECT m_rcNewPos;
 		bool m_bImmMode;
 	};

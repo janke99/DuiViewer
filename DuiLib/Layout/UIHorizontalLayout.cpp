@@ -1,22 +1,23 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIHorizontalLayout.h"
 
 namespace DuiLib
 {
+	IMPLEMENT_DUICONTROL(CHorizontalLayoutUI)
 	CHorizontalLayoutUI::CHorizontalLayoutUI() : m_iSepWidth(0), m_uButtonState(0), m_bImmMode(false)
 	{
-		m_ptLastMouse.x = m_ptLastMouse.y = 0;
+		ptLastMouse.x = ptLastMouse.y = 0;
 		::ZeroMemory(&m_rcNewPos, sizeof(m_rcNewPos));
 	}
 
 	LPCTSTR CHorizontalLayoutUI::GetClass() const
 	{
-		return DUI_CTR_HORIZONTALLAYOUT;
+		return _T("HorizontalLayoutUI");
 	}
 
 	LPVOID CHorizontalLayoutUI::GetInterface(LPCTSTR pstrName)
 	{
-		if( _tcscmp(pstrName, DUI_CTR_HORIZONTALLAYOUT) == 0 ) return static_cast<CHorizontalLayoutUI*>(this);
+		if( _tcsicmp(pstrName, DUI_CTR_HORIZONTALLAYOUT) == 0 ) return static_cast<CHorizontalLayoutUI*>(this);
 		return CContainerUI::GetInterface(pstrName);
 	}
 
@@ -32,6 +33,8 @@ namespace DuiLib
 		rc = m_rcItem;
 
 		// Adjust for inset
+		RECT m_rcInset = CHorizontalLayoutUI::m_rcInset;
+		GetManager()->GetDPIObj()->Scale(&m_rcInset);
 		rc.left += m_rcInset.left;
 		rc.top += m_rcInset.top;
 		rc.right -= m_rcInset.right;
@@ -46,8 +49,8 @@ namespace DuiLib
 
 		// Determine the minimum size
 		SIZE szAvailable = { rc.right - rc.left, rc.bottom - rc.top };
-		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) 
-			szAvailable.cx += m_pHorizontalScrollBar->GetScrollRange();
+		//if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) 
+		//	szAvailable.cx += m_pHorizontalScrollBar->GetScrollRange();
 		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) 
 			szAvailable.cy += m_pVerticalScrollBar->GetScrollRange();
 
@@ -71,22 +74,14 @@ namespace DuiLib
 			if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetMaxHeight();
 			if (szControlAvailable.cx > iControlMaxWidth) szControlAvailable.cx = iControlMaxWidth;
 			if (szControlAvailable.cy > iControlMaxHeight) szControlAvailable.cy = iControlMaxHeight;
-			SIZE sz = { 0 };
-			if (pControl->GetFixedWidth() == 0) {
+			SIZE sz = pControl->EstimateSize(szControlAvailable);
+			if( sz.cx == 0 ) {
 				nAdjustables++;
-				sz.cy = pControl->GetFixedHeight();
 			}
 			else {
-				sz = pControl->EstimateSize(szControlAvailable);
-				if (sz.cx == 0) {
-					nAdjustables++;
-				}
-				else {
-					if (sz.cx < pControl->GetMinWidth()) sz.cx = pControl->GetMinWidth();
-					if (sz.cx > pControl->GetMaxWidth()) sz.cx = pControl->GetMaxWidth();
-				}
+				if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
+				if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
 			}
-
 			cxFixed += sz.cx + pControl->GetPadding().left + pControl->GetPadding().right;
 
 			sz.cy = MAX(sz.cy, 0);
@@ -130,10 +125,10 @@ namespace DuiLib
 			if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetMaxHeight();
 			if (szControlAvailable.cx > iControlMaxWidth) szControlAvailable.cx = iControlMaxWidth;
 			if (szControlAvailable.cy > iControlMaxHeight) szControlAvailable.cy = iControlMaxHeight;
-      cxFixedRemaining = cxFixedRemaining - (rcPadding.left + rcPadding.right);
+			cxFixedRemaining = cxFixedRemaining - (rcPadding.left + rcPadding.right);
 			if (iEstimate > 1) cxFixedRemaining = cxFixedRemaining - m_iChildPadding;
 			SIZE sz = pControl->EstimateSize(szControlAvailable);
-			if (pControl->GetFixedWidth() == 0 || sz.cx == 0) {
+			if( sz.cx == 0 ) {
 				iAdjustable++;
 				sz.cx = cxExpand;
 				// Distribute remaining to last element (usually round-off left-overs)
@@ -228,8 +223,8 @@ namespace DuiLib
 
 	void CHorizontalLayoutUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
-		if( _tcscmp(pstrName, _T("sepwidth")) == 0 ) SetSepWidth(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("sepimm")) == 0 ) SetSepImmMode(_tcscmp(pstrValue, _T("true")) == 0);
+		if( _tcsicmp(pstrName, _T("sepwidth")) == 0 ) SetSepWidth(_ttoi(pstrValue));
+		else if( _tcsicmp(pstrName, _T("sepimm")) == 0 ) SetSepImmMode(_tcsicmp(pstrValue, _T("true")) == 0);
 		else CContainerUI::SetAttribute(pstrName, pstrValue);
 	}
 
@@ -241,7 +236,7 @@ namespace DuiLib
 				RECT rcSeparator = GetThumbRect(false);
 				if( ::PtInRect(&rcSeparator, event.ptMouse) ) {
 					m_uButtonState |= UISTATE_CAPTURED;
-					m_ptLastMouse = event.ptMouse;
+					ptLastMouse = event.ptMouse;
 					m_rcNewPos = m_rcItem;
 					if( !m_bImmMode && m_pManager ) m_pManager->AddPostPaint(this);
 					return;
@@ -260,8 +255,8 @@ namespace DuiLib
 			if( event.Type == UIEVENT_MOUSEMOVE )
 			{
 				if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
-					LONG cx = event.ptMouse.x - m_ptLastMouse.x;
-					m_ptLastMouse = event.ptMouse;
+					LONG cx = event.ptMouse.x - ptLastMouse.x;
+					ptLastMouse = event.ptMouse;
 					RECT rc = m_rcNewPos;
 					if( m_iSepWidth >= 0 ) {
 						if( cx > 0 && event.ptMouse.x < m_rcNewPos.right - m_iSepWidth ) return;

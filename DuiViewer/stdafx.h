@@ -43,9 +43,9 @@ typedef std::stringstream TStream; //typedef std::istringstream TStream;
 using namespace DuiLib;
 
 #ifdef _DEBUG
-#   pragma comment(lib, "..\\bin\\Debug\\DuiLib.lib")
+#   pragma comment(lib, "..\\lib\\DuiLib_d.lib")
 #else
-#   pragma comment(lib, "..\\bin\\Release\\DuiLib.lib")
+#   pragma comment(lib, "..\\lib\\DuiLib.lib")
 #endif
 
 #ifdef _UNICODE

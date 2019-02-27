@@ -45,12 +45,6 @@
     <ClInclude Include="UI\WindowBase.h">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\DialogBuilderCallbackEx.h">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\DialogBuilderEx.h">
-      <Filter>UI</Filter>
-    </ClInclude>
     <ClInclude Include="config.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -69,9 +63,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="UI\WindowBase.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\DialogBuilderEx.cpp">
       <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>

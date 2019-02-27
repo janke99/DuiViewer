@@ -3,19 +3,22 @@
 
 #pragma once
 
+#include <MsHTML.h>
 #include "Utils/WebBrowserEventHandler.h"
 #include <ExDisp.h>
 
 namespace DuiLib
 {
-	class DUILIB_API CWebBrowserUI
+	class UILIB_API CWebBrowserUI
 		: public CActiveXUI
 		, public IDocHostUIHandler
 		, public IServiceProvider
 		, public IOleCommandTarget
 		, public IDispatch
 		, public ITranslateAccelerator
+		, public IInternetSecurityManager 
 	{
+		DECLARE_DUICONTROL(CWebBrowserUI)
 	public:
 		/// 构造函数
 		CWebBrowserUI();
@@ -59,10 +62,11 @@ namespace DuiLib
 		void BeforeNavigate2( IDispatch *pDisp,VARIANT *&url,VARIANT *&Flags,VARIANT *&TargetFrameName,VARIANT *&PostData,VARIANT *&Headers,VARIANT_BOOL *&Cancel );
 		void NavigateError(IDispatch *pDisp,VARIANT * &url,VARIANT *&TargetFrameName,VARIANT *&StatusCode,VARIANT_BOOL *&Cancel);
 		void NavigateComplete2(IDispatch *pDisp,VARIANT *&url);
-		void DocumentComplete(IDispatch *pDisp,VARIANT *&url); 
 		void ProgressChange(LONG nProgress, LONG nProgressMax);
 		void NewWindow3(IDispatch **pDisp, VARIANT_BOOL *&Cancel, DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl);
 		void CommandStateChange(long Command,VARIANT_BOOL Enable);
+		void TitleChange(BSTR bstrTitle);
+		void DocumentComplete(IDispatch *pDisp,VARIANT *&url);
 
 	public:
 		virtual LPCTSTR GetClass() const;
@@ -114,6 +118,54 @@ namespace DuiLib
 			/* [in] */ LPCOLESTR pszRedir,
 			/* [in] */ UINT uiCP);
 
+		virtual HRESULT STDMETHODCALLTYPE SetSecuritySite( 
+            /* [unique][in] */ __RPC__in_opt IInternetSecurityMgrSite *pSite){return S_OK;}
+        
+        virtual HRESULT STDMETHODCALLTYPE GetSecuritySite( 
+            /* [out] */ __RPC__deref_out_opt IInternetSecurityMgrSite **ppSite){return S_OK;}
+        
+        virtual HRESULT STDMETHODCALLTYPE MapUrlToZone( 
+            /* [in] */ __RPC__in LPCWSTR pwszUrl,
+            /* [out] */ __RPC__out DWORD *pdwZone,
+			/* [in] */ DWORD dwFlags) {return S_OK;}
+        
+        virtual HRESULT STDMETHODCALLTYPE GetSecurityId( 
+            /* [in] */ __RPC__in LPCWSTR pwszUrl,
+            /* [size_is][out] */ __RPC__out_ecount_full(*pcbSecurityId) BYTE *pbSecurityId,
+            /* [out][in] */ __RPC__inout DWORD *pcbSecurityId,
+            /* [in] */ DWORD_PTR dwReserved) {return S_OK;}
+        
+        virtual HRESULT STDMETHODCALLTYPE ProcessUrlAction( 
+            /* [in] */ __RPC__in LPCWSTR pwszUrl,
+            /* [in] */ DWORD dwAction,
+            /* [size_is][out] */ __RPC__out_ecount_full(cbPolicy) BYTE *pPolicy,
+            /* [in] */ DWORD cbPolicy,
+            /* [unique][in] */ __RPC__in_opt BYTE *pContext,
+            /* [in] */ DWORD cbContext,
+            /* [in] */ DWORD dwFlags,
+			/* [in] */ DWORD dwReserved)
+		{
+			return S_OK;
+		}
+        
+        virtual HRESULT STDMETHODCALLTYPE QueryCustomPolicy( 
+            /* [in] */ __RPC__in LPCWSTR pwszUrl,
+            /* [in] */ __RPC__in REFGUID guidKey,
+            /* [size_is][size_is][out] */ __RPC__deref_out_ecount_full_opt(*pcbPolicy) BYTE **ppPolicy,
+            /* [out] */ __RPC__out DWORD *pcbPolicy,
+            /* [in] */ __RPC__in BYTE *pContext,
+            /* [in] */ DWORD cbContext,
+            /* [in] */ DWORD dwReserved) {return S_OK;}
+        
+        virtual HRESULT STDMETHODCALLTYPE SetZoneMapping( 
+            /* [in] */ DWORD dwZone,
+            /* [in] */ __RPC__in LPCWSTR lpszPattern,
+            /* [in] */ DWORD dwFlags) {return S_OK;}
+        
+        virtual HRESULT STDMETHODCALLTYPE GetZoneMappings( 
+            /* [in] */ DWORD dwZone,
+            /* [out] */ __RPC__deref_out_opt IEnumString **ppenumString,
+            /* [in] */ DWORD dwFlags) {return S_OK;}
 		// ITranslateAccelerator
 		// Duilib消息分发给WebBrowser
 		virtual LRESULT TranslateAccelerator( MSG *pMsg );

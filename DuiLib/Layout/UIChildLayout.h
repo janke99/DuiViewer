@@ -5,8 +5,9 @@
 
 namespace DuiLib
 {
-	class DUILIB_API CChildLayoutUI : public CContainerUI
+	class UILIB_API CChildLayoutUI : public CContainerUI
 	{
+		DECLARE_DUICONTROL(CChildLayoutUI)
 	public:
 		CChildLayoutUI();
 
