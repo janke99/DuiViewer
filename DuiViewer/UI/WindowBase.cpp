@@ -26,6 +26,12 @@ LPCTSTR CWindowBase::GetWindowClassName(void) const
 	return m_strClassName;
 }
 
+HWND CWindowBase::Create(HWND hwndParent, LPCTSTR pstrName)
+{
+	return CWindowWnd::Create(hwndParent, pstrName, UI_WNDSTYLE_FRAME^WS_MAXIMIZEBOX^WS_VISIBLE,
+		UI_WNDSTYLE_EX_FRAME | WS_EX_ACCEPTFILES);
+}
+
 LRESULT CWindowBase::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lRes = 0;

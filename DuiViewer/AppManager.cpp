@@ -36,20 +36,19 @@ BOOL CAppManager::LoadSkin(LPCTSTR lpcSkin)
 	size_t ps = strSkin.find_last_of(_T("\\"));
 	if (ps == TString::npos) return FALSE;
 
-	m_strSkinPath = strSkin.substr(0, ps + 1);
-	m_strSkinName = strSkin.substr(ps + 1);
+	TString strPath = strSkin.substr(0, ps + 1);
+	TString strName = strSkin.substr(ps + 1);
 
-	if (m_strSkinPath.empty() || m_strSkinName.empty())
+	if (strPath.empty() || strName.empty())
 		return FALSE;
+	m_strSkinPath = strPath;
+	m_strSkinName = strName;
 
 	CPaintManagerUI::SetResourceClear();
-	//CPaintManagerUI::SetResourceType(UILIB_FILE);
 	CPaintManagerUI::SetResourcePath(m_strSkinPath.c_str());
-	//CPaintManagerUI::ReloadSkin();
 	
 	CWindowBase *pWin = new CWindowBase(_T("DuiViewer"), m_strSkinName.c_str());
-	HWND h = pWin->Create(0, _T("DuiViewer"), UI_WNDSTYLE_FRAME^WS_MAXIMIZEBOX^WS_VISIBLE,
-		UI_WNDSTYLE_EX_FRAME | WS_EX_ACCEPTFILES);
+	HWND h = pWin->Create(0, _T("DuiViewer"));
 
 	if (!::IsWindow(h))
 	{
@@ -92,8 +91,7 @@ BOOL CAppManager::LoadDefaultSkin()
 	CPaintManagerUI::SetResourceZip(m_lpResourceZIPBuffer, dwSize);
 
 	m_WinBase = new CWindowBase(_T("DuiViewer"), _T("skin.xml"));
-	m_WinBase->Create(0, _T("DuiViewer"), UI_WNDSTYLE_FRAME^WS_MAXIMIZEBOX^WS_VISIBLE, 
-		UI_WNDSTYLE_EX_FRAME| WS_EX_ACCEPTFILES);
+	m_WinBase->Create(0, _T("DuiViewer"));
 	m_WinBase->CenterWindow();
 	m_WinBase->ShowWindow(true);
 
@@ -106,8 +104,7 @@ BOOL CAppManager::RefreshSkin()
 		return FALSE;
 
 	CWindowBase *pWin = new CWindowBase(_T("DuiViewer"), m_strSkinName.c_str());
-	HWND h = pWin->Create(0, _T("DuiViewer"), UI_WNDSTYLE_FRAME^WS_MAXIMIZEBOX^WS_VISIBLE, 
-		UI_WNDSTYLE_EX_FRAME| WS_EX_ACCEPTFILES);
+	HWND h = pWin->Create(0, _T("DuiViewer"));
 	
 	if (!::IsWindow(h))
 	{

@@ -8,10 +8,8 @@ bin/
 doc/
 ipch/
 obj/
-tools/
 Debug/
 Release/
-libHome/bookmarks#
 *.lo
 *.o
 *.obj
@@ -59,11 +57,6 @@ libHome/bookmarks#
 # compile
 bin/
 ipch/
-
-# Delphi history and backups
-__history/
-*.~*
-*.dcu
 
 # nuGet packages
 packages/

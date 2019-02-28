@@ -9,6 +9,7 @@ public:
 
 	virtual CDuiString GetSkinFile();
 	virtual LPCTSTR GetWindowClassName(void) const;
+	virtual HWND Create(HWND hwndParent, LPCTSTR pstrName);
 public:
 	virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	virtual LRESULT OnCreate(WPARAM wParam, LPARAM lParam, BOOL& bHandled);
