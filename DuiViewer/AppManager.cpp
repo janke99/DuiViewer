@@ -11,7 +11,7 @@ template<> CAppManager* CSingleton<CAppManager>::ms_Singleton = NULL;
 
 #pragma warning(disable:4996)
 CAppManager::CAppManager()
-	:m_WinBase(NULL)
+	:m_WinBase(NULL), m_lpResourceZIPBuffer(NULL)
 {
 	TCHAR szCurrentDir[MAX_PATH + 1] = { 0 };
 	GetCurrentDirectory(MAX_PATH, szCurrentDir);
@@ -22,7 +22,7 @@ CAppManager::CAppManager()
 
 CAppManager::~CAppManager()
 {
-
+	if (m_lpResourceZIPBuffer) delete m_lpResourceZIPBuffer;
 }
 
 BOOL CAppManager::LoadSkin(LPCTSTR lpcSkin)
@@ -42,10 +42,58 @@ BOOL CAppManager::LoadSkin(LPCTSTR lpcSkin)
 	if (m_strSkinPath.empty() || m_strSkinName.empty())
 		return FALSE;
 
+	CPaintManagerUI::SetResourceClear();
+	//CPaintManagerUI::SetResourceType(UILIB_FILE);
 	CPaintManagerUI::SetResourcePath(m_strSkinPath.c_str());
+	//CPaintManagerUI::ReloadSkin();
 	
-	m_WinBase = new CWindowBase(_T("DuiViewer"), m_strSkinName.c_str());
-	m_WinBase->Create(0, _T("DuiViewer"), UI_WNDSTYLE_FRAME^WS_MAXIMIZEBOX^WS_VISIBLE, UI_WNDSTYLE_EX_FRAME);
+	CWindowBase *pWin = new CWindowBase(_T("DuiViewer"), m_strSkinName.c_str());
+	HWND h = pWin->Create(0, _T("DuiViewer"), UI_WNDSTYLE_FRAME^WS_MAXIMIZEBOX^WS_VISIBLE,
+		UI_WNDSTYLE_EX_FRAME | WS_EX_ACCEPTFILES);
+
+	if (!::IsWindow(h))
+	{
+		::MessageBox(0, _T("Æ¤·ô¼ÓÔØÊ§°Ü£¡"), _T("´íÎó"), MB_OK);
+		delete pWin;
+		return FALSE;
+	}
+
+	if (m_WinBase)
+		m_WinBase->Close(0);
+	m_WinBase = pWin;
+	m_WinBase->CenterWindow();
+	m_WinBase->ShowWindow(true);
+
+	return TRUE;
+}
+
+BOOL CAppManager::LoadDefaultSkin()
+{
+	//´Ó×ÊÔ´ÖÐ¼ÓÔØzip
+	HRSRC hResource = ::FindResource(CPaintManagerUI::GetResourceDll(), MAKEINTRESOURCE(IDR_ZIP1), _T("ZIP"));
+	if (hResource == NULL)
+		return FALSE;
+	DWORD dwSize = 0;
+	HGLOBAL hGlobal = ::LoadResource(CPaintManagerUI::GetResourceDll(), hResource);
+	if (hGlobal == NULL)
+	{
+		::FreeResource(hResource);
+		return FALSE;
+	}
+	dwSize = ::SizeofResource(CPaintManagerUI::GetResourceDll(), hResource);
+	if (dwSize == 0)
+		return FALSE;
+	m_lpResourceZIPBuffer = new BYTE[dwSize];
+	if (m_lpResourceZIPBuffer != NULL)
+	{
+		::CopyMemory(m_lpResourceZIPBuffer, (LPBYTE)::LockResource(hGlobal), dwSize);
+	}
+	::FreeResource(hResource);
+	CPaintManagerUI::SetResourceZip(m_lpResourceZIPBuffer, dwSize);
+
+	m_WinBase = new CWindowBase(_T("DuiViewer"), _T("skin.xml"));
+	m_WinBase->Create(0, _T("DuiViewer"), UI_WNDSTYLE_FRAME^WS_MAXIMIZEBOX^WS_VISIBLE, 
+		UI_WNDSTYLE_EX_FRAME| WS_EX_ACCEPTFILES);
 	m_WinBase->CenterWindow();
 	m_WinBase->ShowWindow(true);
 
@@ -54,14 +102,23 @@ BOOL CAppManager::LoadSkin(LPCTSTR lpcSkin)
 
 BOOL CAppManager::RefreshSkin()
 {
-	if (m_WinBase)
+	if (m_strSkinName.empty())
+		return FALSE;
+
+	CWindowBase *pWin = new CWindowBase(_T("DuiViewer"), m_strSkinName.c_str());
+	HWND h = pWin->Create(0, _T("DuiViewer"), UI_WNDSTYLE_FRAME^WS_MAXIMIZEBOX^WS_VISIBLE, 
+		UI_WNDSTYLE_EX_FRAME| WS_EX_ACCEPTFILES);
+	
+	if (!::IsWindow(h))
 	{
-		m_WinBase->Close(0);
-		m_WinBase = NULL;
+		::MessageBox(0, _T("Æ¤·ô¼ÓÔØÊ§°Ü£¡"), _T("´íÎó"), MB_OK);
+		delete pWin;
+		return FALSE;
 	}
 
-	m_WinBase = new CWindowBase(_T("DuiViewer"), m_strSkinName.c_str());
-	m_WinBase->Create(0, _T("DuiViewer"), UI_WNDSTYLE_FRAME^WS_MAXIMIZEBOX^WS_VISIBLE, UI_WNDSTYLE_EX_FRAME);
+	if (m_WinBase)
+		m_WinBase->Close(0);
+	m_WinBase = pWin;
 	m_WinBase->CenterWindow();
 	m_WinBase->ShowWindow(true);
 

@@ -19,14 +19,14 @@
 #include <tchar.h>
 #include <objbase.h>
 #include <vector>
+#include "resource.h"
+#include "config.h"
 
 #ifdef _DEBUG
 	#define d_msg(a) ::MessageBoxW(0, a, _T("d_msg"), MB_OK)
 #else
 	#define d_msg(a)
 #endif
-
-#include "config.h"
 
 using namespace std;
 typedef std::vector<BYTE> ByteVector;
@@ -43,9 +43,9 @@ typedef std::stringstream TStream; //typedef std::istringstream TStream;
 using namespace DuiLib;
 
 #ifdef _DEBUG
-#   pragma comment(lib, "..\\lib\\DuiLib_d.lib")
+#   pragma comment(lib, "..\\bin\\Debug\\DuiLib.lib")
 #else
-#   pragma comment(lib, "..\\lib\\DuiLib.lib")
+#   pragma comment(lib, "..\\bin\\Release\\DuiLib.lib")
 #endif
 
 #ifdef _UNICODE

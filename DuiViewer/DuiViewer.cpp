@@ -15,21 +15,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
-	if (_tcslen(lpCmdLine) == 0)
-	{
-		HelpOut();
-		return -1;
-	}
 	HRESULT Hr = ::CoInitialize(0);
 	if (FAILED(Hr)) return -1;
 
 	CPaintManagerUI::SetInstance(hInstance);
 	CAppManager *pApp = new CAppManager;
-	if (!pApp->LoadSkin(lpCmdLine))
+
+	if (_tcslen(lpCmdLine) != 0)
 	{
-		HelpOut();
-		return -1;
-	}
+		if (!pApp->LoadSkin(lpCmdLine))
+		{
+			HelpOut();
+			return -1;
+		}
+	}else
+		pApp->LoadDefaultSkin();
 
 	CPaintManagerUI::MessageLoop();
 	delete pApp;

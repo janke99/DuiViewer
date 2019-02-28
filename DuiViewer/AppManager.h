@@ -12,6 +12,8 @@ public:
 public:
 	// 加载皮肤
 	BOOL		LoadSkin(LPCTSTR lpcSkin);
+	// 加载内置皮肤
+	BOOL		LoadDefaultSkin();
 	// 重新加载皮肤
 	BOOL		RefreshSkin();
 protected:
@@ -20,4 +22,5 @@ private:
 	TString		m_strSkinName;
 	CWindowBase	*m_WinBase;
 	TString		m_AppPath;
+	LPBYTE		m_lpResourceZIPBuffer;
 };

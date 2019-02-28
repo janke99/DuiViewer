@@ -541,6 +541,17 @@ namespace DuiLib {
 		}
 	}
 
+	void CPaintManagerUI::SetResourceClear()
+	{
+		m_pStrResourceZip = _T("");
+		if (m_bCachedResourceZip && m_hResourceZip != NULL) {
+			CloseZip((HZIP)m_hResourceZip);
+			m_hResourceZip = NULL;
+		}
+		m_bCachedResourceZip = false;
+		m_hResourceZip = NULL;
+	}
+
 	CPaintManagerUI* CPaintManagerUI::GetPaintManager(LPCTSTR pstrName)
 	{
 		if( pstrName == NULL ) return NULL;

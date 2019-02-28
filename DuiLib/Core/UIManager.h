@@ -290,6 +290,7 @@ namespace DuiLib {
 		static bool GetHSL(short* H, short* S, short* L);
 		static void SetHSL(bool bUseHSL, short H, short S, short L); // H:0~360, S:0~200, L:0~200 
 		static void ReloadSkin();
+		static void SetResourceClear();
 		static CPaintManagerUI* GetPaintManager(LPCTSTR pstrName);
 		static CStdPtrArray* GetPaintManagers();
 		static bool LoadPlugin(LPCTSTR pstrModuleName);

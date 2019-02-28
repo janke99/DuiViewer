@@ -31,12 +31,14 @@ public:
 	virtual LRESULT OnSetFocus(WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	virtual LRESULT OnLButtonDown(WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	virtual LRESULT OnLButtonUp(WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	virtual LRESULT OnDropfiles(WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	virtual void	Notify(TNotifyUI& msg);
 	virtual void	OnWindowInit();
 	virtual void	OnClick(TNotifyUI& msg);
 	virtual void	OnKillFocus(TNotifyUI& msg);
-
+protected:
+	virtual void	OnFinalMessage(HWND hWnd);
 protected:
 	virtual LRESULT ResponseDefaultKeyEvent(WPARAM wParam);
 	// 根据名称调用事件，批量处理与单条处理，";"符号分割

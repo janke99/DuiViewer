@@ -50,6 +50,7 @@ LRESULT CWindowBase::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_SETFOCUS:       lRes = OnSetFocus(wParam, lParam, bHandled);		break;
 	case WM_LBUTTONUP:      lRes = OnLButtonUp(wParam, lParam, bHandled);		break;
 	case WM_LBUTTONDOWN:    lRes = OnLButtonDown(wParam, lParam, bHandled);	break;
+	case WM_DROPFILES:		lRes = OnDropfiles(wParam, lParam, bHandled);	break;
 
 	default:
 		bHandled = FALSE;
@@ -155,8 +156,6 @@ LRESULT CWindowBase::OnNcHitTest(WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 		if (pControl)
 		{
 			LPCTSTR pszClass = pControl->GetClass();
-			::OutputDebugString(pszClass);
-			::OutputDebugString(_T("\r"));
 			if (_tcsicmp(pszClass, _T("VerticalLayoutUI")) == 0 
 				|| _tcsicmp(pszClass, _T("HorizontalLayoutUI")) == 0)
 			{
@@ -259,6 +258,11 @@ void CWindowBase::OnKillFocus(TNotifyUI& msg)
 			m_popControl = NULL;
 		}
 	}
+}
+
+void CWindowBase::OnFinalMessage(HWND hWnd)
+{
+	delete this;
 }
 
 LRESULT CWindowBase::ResponseDefaultKeyEvent(WPARAM wParam)
@@ -394,6 +398,21 @@ LRESULT CWindowBase::OnLButtonDown(WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 LRESULT CWindowBase::OnLButtonUp(WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
+	return 0;
+}
+
+LRESULT CWindowBase::OnDropfiles(WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	TCHAR szPath[_MAX_PATH];
+	HDROP hDrop = (HDROP)wParam;
+	UINT uCount = ::DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+	if (uCount > 0)
+	{
+		// 只取第一个
+		::DragQueryFile(hDrop, 0, szPath, _MAX_PATH);
+		CAppManager::getSingleton().LoadSkin(szPath);
+	}
+	::DragFinish(hDrop);
 	return 0;
 }
 

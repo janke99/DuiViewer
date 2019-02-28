@@ -180,7 +180,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="DuiViewer.ico" />
-    <Image Include="small.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

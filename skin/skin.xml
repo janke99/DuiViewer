@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window size="512,362" sizebox="0,0,0,0" caption="0,0,0,410" bktrans="true">
+  <Font id="0" name="微软雅黑" size="12" bold="false" default="true" />
+  <Font id="1" name="微软雅黑" size="24" bold="false" default="true" />
+  <VerticalLayout bkimage="file='img\shadow_bg.png' corner='12,12,12,12'" inset="12,12,12,12">
+    <Label padding="0,100" textColor="#0b88fc" text="拖放*.xml文件到窗口打开" Font="1" align="center" valign="center"/>
+    <Label padding="0,40" textColor="#0b88fc" text="F5刷新、Delete退出" Font="1" align="center" valign="center"/>
+  </VerticalLayout>
+</Window>
