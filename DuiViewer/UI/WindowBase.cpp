@@ -2,8 +2,6 @@
 #include "WindowBase.h"
 #include "../Common/Utils.h"
 #include "../AppManager.h"
-#include "DialogBuilderEx.h"
-#include "DialogBuilderCallbackEx.h"
 
 
 CWindowBase::CWindowBase(LPCTSTR pszClass, LPCTSTR pszXML)
@@ -344,34 +342,6 @@ LRESULT CWindowBase::DispatchCustomEvent(CControlUI* pSender, LPCTSTR pszEvent)
 			if (m_popControl) {
 				m_popControl->SetVisible(!m_popControl->IsVisible());
 				if (m_popControl->IsVisible()) m_popControl->SetFocus();
-			}
-		}
-		else if (_tcsicmp(szName, UIEVENT_CUSTOM_RETRY) == 0)
-		{
-			// ä¯ÀÀÆ÷¶¨ÒåË¢ÐÂ
-			if (pSender && _tcsicmp(pSender->GetClass(), DUI_CTR_WEBBROWSER) == 0) {
-				CWebBrowserUI* pWeb = reinterpret_cast<CWebBrowserUI*>(pSender);
-				LPCTSTR lpRetryedTime = pWeb->GetCustomAttribute(_T("_RetryedTime"));
-				if (!lpRetryedTime) {
-					lpRetryedTime = _T("0");
-					pWeb->AddCustomAttribute(_T("_RetryedTime"), lpRetryedTime);
-				}
-				LPTSTR lpTmp = NULL;
-				LONG lRetry = _tcstol(szArg, &lpTmp, 10);
-				LONG lRetryed = _tcstol(lpRetryedTime, &lpTmp, 10);
-				if (lRetryed < lRetry)
-				{
-					lRetryed++;
-					TCHAR buf[4];
-					_ltot(lRetryed, buf, 10);
-					pWeb->RemoveCustomAttribute(_T("_RetryedTime"));
-					pWeb->AddCustomAttribute(_T("_RetryedTime"), buf);
-					pWeb->NavigateHomePage();
-				}
-				else {
-					// die
-					DispatchCustomEvent(pSender, UIEVENT_CUSTOM_DIE);
-				}
 			}
 		}
 		else if (_tcsicmp(szName, UIEVENT_CUSTOM_SLEEP) == 0)
